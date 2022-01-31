@@ -70,13 +70,13 @@ def get_kpis(date):
                f"for the chosen date ({date}):\n",
                "Please enter the number of SWIPES "
                f"for the chosen date ({date}):\n"]
-    while True:
-        for i in range(len(prompts)):
-            kpi_input = input(prompts[i])
-            if validate_kpi(kpi_input):
-                kpi_list.append(kpi_input)
-        print("Thanks for entering valid data!")
-        break
+    i = 0
+    while len(prompts) != len(kpi_list):
+        kpi_input = input(prompts[i])
+        if validate_kpi(kpi_input):
+            kpi_list.append(kpi_input)
+            i += 1
+    print("Thanks for entering valid data!")
     return kpi_list
 
 
