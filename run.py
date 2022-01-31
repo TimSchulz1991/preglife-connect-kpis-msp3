@@ -16,6 +16,8 @@ WORKSHEET = SHEET.worksheet("kpis")
 
 print("""Welcome to this Python program to save the most recent
 Preglife Connect KPIs and to analyse the current trends for you!\n""")
+# The setup of the connection between Python and the Google sheet
+# was done with the help of the LoveSandwiches project.
 
 
 def get_date():
@@ -68,10 +70,30 @@ def get_kpis(date):
                f"for the chosen date ({date}):\n",
                "Please enter the number of SWIPES "
                f"for the chosen date ({date}):\n"]
-    for i in range(len(prompts)):
-        kpi_input = input(prompts[i])
-        kpi_list.append(kpi_input)
+    while True:
+        for i in range(len(prompts)):
+            kpi_input = input(prompts[i])
+            if validate_kpi(kpi_input):
+                kpi_list.append(kpi_input)
+        print("Thanks for entering valid data!")
+        break
     return kpi_list
+
+
+def validate_kpi(kpi):
+    """
+    This function validates that the given values are integers
+    larger than or equal to 0.
+    """
+    try:
+        kpi_input = int(kpi)
+        if kpi_input < 0:
+            print("Your input must all be positive, whole numbers\n")
+            return False
+    except ValueError:
+        print("You can only enter numbers\n")
+        return False
+    return True
 
 
 def main():
