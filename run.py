@@ -24,10 +24,14 @@ def get_date():
     for which the KPIs should be entered into the sheet.
     """
     while True:
-        print("""For which date would you like to enter
-        the KPIs of the Preglife Connect app?""")
-        print("""Please enter the date in the following format:
-        DD/MM/YYYY, e.g. 22/02/2022\n""")
+        print(
+            "For which date would you like to enter "
+            "the KPIs of the Preglife Connect app?\n"
+        )
+        print(
+            "Please enter the date in the following format: "
+            "DD/MM/YYYY, e.g. 22/02/2022\n"
+        )
 
         date_input = input("Enter the date here:\n")
 
@@ -49,30 +53,33 @@ def validate_date(date):
         return False
 
 
-def get_kpis():
+def get_kpis(date):
     """
     This function gets all the KPIs from the user and saves them in a list.
     """
-    date = get_date()
     kpi_list = []
-    promts = [f"""Please enter the number of APP OPENS
-              for the chosen date ({date}):\n""",
-              f"""Please enter the number of SCREEN VIEWS
-              for the chosen date ({date}):\n""",
-              f"""Please enter the number of AD VIEWS
-              for the chosen date ({date}):\n""",
-              f"""Please enter the number of CREATED THREADS
-               for the chosen date ({date}):\n""",
-              f"""Please enter the number of SWIPES
-              for the chosen date ({date}):\n"""]
-    for i in range(len(promts)):
-        kpi_input = input(promts[i])
+    prompts = ["Please enter the number of APP OPENS "
+               f"for the chosen date ({date}):\n",
+               "Please enter the number of SCREEN VIEWS "
+               f"for the chosen date ({date}):\n",
+               "Please enter the number of AD VIEWS "
+               f"for the chosen date ({date}):\n",
+               "Please enter the number of CREATED THREADS "
+               f"for the chosen date ({date}):\n",
+               "Please enter the number of SWIPES "
+               f"for the chosen date ({date}):\n"]
+    for i in range(len(prompts)):
+        kpi_input = input(prompts[i])
         kpi_list.append(kpi_input)
-    print(kpi_list)
+    return kpi_list
 
 
 def main():
-    get_kpis()
+    """
+    This function will execute all the other functions to run the program.
+    """
+    chosen_date = get_date()
+    get_kpis(chosen_date)
 
 
 main()
