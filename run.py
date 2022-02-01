@@ -76,7 +76,7 @@ def get_kpis(date):
         if validate_kpi(kpi_input):
             kpi_list.append(kpi_input)
             i += 1
-    print("Thanks for entering valid data!")
+    print("Thanks for entering valid data!\n")
     return kpi_list
 
 
@@ -85,15 +85,32 @@ def validate_kpi(kpi):
     This function validates that the given values are integers
     larger than or equal to 0.
     """
+    # This stackoverflow page helped me with
+    # the validation process (for positive integer):
+    # https://stackoverflow.com/questions/26198131/check-if-input-is-positive-integer
     try:
         kpi_input = int(kpi)
         if kpi_input < 0:
-            print("Your input must all be positive, whole numbers\n")
+            print("Your input must be a positive, whole number!\n")
             return False
     except ValueError:
-        print("You can only enter numbers\n")
+        print("You can only enter numbers!\n")
         return False
     return True
+
+
+def update_worksheet(kpis, date):
+    """
+    This function will grab the Google sheet and update it with the
+    KPIs that were entered by the user for a given date.
+    """
+    print("The KPIs worksheet is currently updating...\n")
+    date_cell = WORKSHEET.find(date)
+    i = 0
+    for col in range(1, 6):
+        WORKSHEET.update_cell(date_cell.row, date_cell.col+col, kpis[i])
+        i += 1
+    print("Worksheet successfully updated.\n")
 
 
 def main():
@@ -101,7 +118,9 @@ def main():
     This function will execute all the other functions to run the program.
     """
     chosen_date = get_date()
-    get_kpis(chosen_date)
+    str_kpis = get_kpis(chosen_date)
+    int_kpis = [int(kpi) for kpi in str_kpis]
+    update_worksheet(int_kpis, chosen_date)
 
 
 main()
