@@ -71,7 +71,9 @@ def get_kpis(date):
                "Please enter the number of SWIPES "
                f"for the chosen date ({date}):\n"]
     i = 0
-    while len(prompts) != len(kpi_list):
+    #Thanks to my colleague Daniel to give me the idea to 
+    #use a while loop in this particular way
+    while len(prompts) != len(kpi_list): 
         kpi_input = input(prompts[i])
         if validate_kpi(kpi_input):
             kpi_list.append(kpi_input)
@@ -99,7 +101,7 @@ def validate_kpi(kpi):
     return True
 
 
-def last_30_day_kpis(date):
+def last_30_day_data(date):
     """
     This function grabs the values from the last 30 days of each KPI
     from the worksheet and calculates their averages.
@@ -138,12 +140,24 @@ def check_30_day_data(values):
             print(
                 "It seems like you have missed to enter some values "
                 "on recent dates. Please do so in the future "
-                "in order to not distort the following calculations."
+                "in order to not distort the following calculations.\n"
             )
             break
         else:
             print("Good job, you have entered data for the last 30 days!\n")
             break
+
+
+def get_30_day_averages(values):
+    """
+    This function will calculate the averages for the last 30
+    days for each KPI.
+    """
+    list_with_sums = []
+    for each_list in values:
+        int_list = [int(num) for num in each_list]
+        list_with_sums.append(sum(int_list))
+    print(list_with_sums)
 
 
 def update_worksheet(kpis, date):
@@ -165,11 +179,12 @@ def main():
     This function will execute all the other functions to run the program.
     """
     chosen_date = get_date()
-    unchecked_30_day_kpis = last_30_day_kpis(chosen_date)
+    unchecked_30_day_kpis = last_30_day_data(chosen_date)
     check_30_day_data(unchecked_30_day_kpis)
-    str_kpis = get_kpis(chosen_date)
-    int_kpis = [int(kpi) for kpi in str_kpis]
-    update_worksheet(int_kpis, chosen_date)
+    get_30_day_averages(unchecked_30_day_kpis)
+    #str_kpis = get_kpis(chosen_date)
+    #int_kpis = [int(kpi) for kpi in str_kpis]
+    #update_worksheet(int_kpis, chosen_date)
 
 
 main()
