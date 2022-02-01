@@ -99,6 +99,53 @@ def validate_kpi(kpi):
     return True
 
 
+def last_30_day_kpis(date):
+    """
+    This function grabs the values from the last 30 days of each KPI
+    from the worksheet and calculates their averages.
+    """
+    # This function was set up with the help of the gspread documentation.
+    date_cell = WORKSHEET.find(date)
+    date_cell_row = date_cell.row
+    range_start = str(date_cell_row-30)
+    range_end = str(date_cell_row-1)
+
+    final_values = []
+    for let in ["B", "C", "D", "E", "F"]:
+        column_values = []
+        for row in WORKSHEET.range(f"{let}{range_start}:{let}{range_end}"):
+            column_values.append(row.value)
+        final_values.append(column_values)
+    return final_values
+
+
+def check_30_day_data(values):
+    """
+    This function will check how many of the 30 values are empty and
+    subsquently give a string to the user if they were sloppy
+    entering values during the last 30 days.
+    """
+    all_empty_values_list = []
+    for column in values:
+        column_empty_values = []
+        for value in column:
+            if value == "":
+                column_empty_values.append(value)
+        all_empty_values_list.append(column_empty_values)
+
+    for each_list in all_empty_values_list:
+        if len(each_list) > 0:
+            print(
+                "It seems like you have missed to enter some values "
+                "on recent dates. Please do so in the future "
+                "in order to not distort the following calculations."
+            )
+            break
+        else:
+            print("Good job, you have entered data for the last 30 days!\n")
+            break
+
+
 def update_worksheet(kpis, date):
     """
     This function will grab the Google sheet and update it with the
@@ -118,6 +165,8 @@ def main():
     This function will execute all the other functions to run the program.
     """
     chosen_date = get_date()
+    unchecked_30_day_kpis = last_30_day_kpis(chosen_date)
+    check_30_day_data(unchecked_30_day_kpis)
     str_kpis = get_kpis(chosen_date)
     int_kpis = [int(kpi) for kpi in str_kpis]
     update_worksheet(int_kpis, chosen_date)
