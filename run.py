@@ -58,7 +58,7 @@ def validate_date(date):
 def last_30_day_data(date):
     """
     This function grabs the values from the last 30 days of each KPI
-    from the worksheet and calculates their averages.
+    from the worksheet.
     """
     # This function was set up with the help of the gspread documentation.
     date_cell = WORKSHEET.find(date)
@@ -93,8 +93,8 @@ def check_30_day_data(values):
         if len(each_list) > 0:
             print(
                 "It seems like you have missed to enter some values "
-                "on recent dates. Please enter data consistently in the future "
-                "in order to not distort the following calculations.\n"
+                "on recent dates. Please enter data consistently in the "
+                "future in order to not distort the following calculations.\n"
             )
             break
         else:
@@ -190,7 +190,7 @@ def calculate_current_trends(kpis, averages):
     """
     This function will calculate how the KPIs have developed compared
     to the average of the last 30 days.
-    """ 
+    """
     trends_list = [(kpi/average)-1 for kpi, average in zip(kpis, averages)]
     return trends_list
 
@@ -198,10 +198,12 @@ def calculate_current_trends(kpis, averages):
 def evaluate_trends(trends):
     """
     This function will evaluate the previously calculated trends
-    of KPI development and will give the user relevant 
+    of KPI development and will give the user relevant
     information about it.
     """
-    all_kpis = ["App Opens", "Screen Views", "Ad Views", "Threads Created", "Swipes"]
+    all_kpis = (
+        ["App Opens", "Screen Views", "Ad Views", "Threads Created", "Swipes"]
+    )
     min_kpi = min(trends)
     max_kpi = max(trends)
     min_pos = trends.index(min_kpi)
@@ -211,16 +213,23 @@ def evaluate_trends(trends):
         min_word = "decreasing"
     else:
         min_word = "increaing"
-    
+
     if max_kpi > 0:
         max_word = "increaing"
-    else: 
+    else:
         max_word = "decreaing"
 
     print(
-        f"Compared to the average of the last 30 days, the KPI '{all_kpis[min_pos]}' performed worst, {min_word} by {round((min_kpi)*100)}%\n"
+        f"Compared to the average of the last 30 days, the KPI "
+        f"'{all_kpis[min_pos]}' performed worst, "
+        f"{min_word} by {round((min_kpi)*100)}%\n"
         )
-    print(f"The KPI '{all_kpis[max_pos]}' performed best, {max_word} by {round((max_kpi)*100)}%\n")
+    print(
+        f"Compared to the average of the last 30 days, the KPI "
+        f"'{all_kpis[max_pos]}' performed best, "
+        f"{max_word} by {round((max_kpi)*100)}%\n"
+        )
+
 
 def main():
     """
@@ -235,5 +244,6 @@ def main():
     #update_worksheet(int_kpis, chosen_date)
     trends = calculate_current_trends(int_kpis, averages)
     evaluate_trends(trends)
+
 
 main()
