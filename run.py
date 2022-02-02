@@ -81,6 +81,7 @@ def check_30_day_data(values):
     subsquently give a string to the user if they were sloppy
     entering values during the last 30 days.
     """
+    # if "" in values[0]: print...
     all_empty_values_list = []
     for column in values:
         column_empty_values = []
@@ -167,7 +168,7 @@ def validate_kpi(kpi):
             print("Your input must be a positive, whole number!\n")
             return False
     except ValueError:
-        print("You can only enter whole numbers!\n")
+        print("You need to enter whole numbers!\n")
         return False
     return True
 
@@ -195,11 +196,11 @@ def calculate_current_trends(kpis, averages):
     return trends_list
 
 
-def evaluate_trends(trends):
+def evaluate_min_max(trends):
     """
     This function will evaluate the previously calculated trends
     of KPI development and will give the user relevant
-    information about it.
+    information about the best and worst KPI.
     """
     all_kpis = (
         ["App Opens", "Screen Views", "Ad Views", "Threads Created", "Swipes"]
@@ -211,24 +212,58 @@ def evaluate_trends(trends):
 
     if min_kpi < 0:
         min_word = "decreasing"
+        trend_word_min = "worst"
     else:
         min_word = "increaing"
+        trend_word_min = "'worst'"
 
     if max_kpi > 0:
         max_word = "increaing"
+        trend_word_max = "best"
+
     else:
         max_word = "decreaing"
+        trend_word_max = "'best'"
 
     print(
         f"Compared to the average of the last 30 days, the KPI "
-        f"'{all_kpis[min_pos]}' performed worst, "
+        f"'{all_kpis[min_pos]}' performed {trend_word_min}, "
         f"{min_word} by {round((min_kpi)*100)}%\n"
         )
     print(
         f"Compared to the average of the last 30 days, the KPI "
-        f"'{all_kpis[max_pos]}' performed best, "
+        f"'{all_kpis[max_pos]}' performed {trend_word_max}, "
         f"{max_word} by {round((max_kpi)*100)}%\n"
         )
+
+
+def evaluate_all_kpis(values):
+    """
+    This function will evaluate the previously calculated trends
+    of KPI development and will give the user relevant
+    information about how many KPIs were improved, if any.
+    """
+    positive_values = [val for val in values if val > 0]
+    if len(positive_values) == 5:
+        print(
+            "Great job, all 5 KPIs improved "
+            "compared to last month's average.\n"
+            )
+    elif len(positive_values) >= 3:
+        print(
+            "Very good, more than half of the 5 KPIs improved "
+            "compared to last month's average.\n"
+            )
+    elif len(positive_values) >= 1:
+        print(
+            "Not so bad, you increased at least some KPIs "
+            "compared to last month's average.\n"
+            )
+    else:
+        print(
+            "Keep on fighting, no KPIs improved "
+            "compared to last month's average, but you can turn it around!\n"
+            )
 
 
 def main():
@@ -243,7 +278,8 @@ def main():
     int_kpis = [int(kpi) for kpi in str_kpis]
     #update_worksheet(int_kpis, chosen_date)
     trends = calculate_current_trends(int_kpis, averages)
-    evaluate_trends(trends)
-
+    evaluate_min_max(trends)
+    evaluate_all_kpis(trends)
+    print("Thank you for entering the KPI data. See you tomorrow :)")
 
 main()
