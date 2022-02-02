@@ -14,8 +14,8 @@ GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open("connect_kpis")
 WORKSHEET = SHEET.worksheet("kpis")
 
-print("""Welcome to this Python program to save the most recent
-Preglife Connect KPIs and to analyse the current trends for you!\n""")
+print("""Welcome to this Python program, which captures the most recent
+Preglife Connect KPIs and analyzes the current trends for you!\n""")
 # The setup of the connection between Python and the Google sheet
 # was done with the help of the LoveSandwiches project.
 
@@ -81,26 +81,27 @@ def check_30_day_data(values):
     subsquently give a string to the user if they were sloppy
     entering values during the last 30 days.
     """
-    # if "" in values[0]: print...
-    all_empty_values_list = []
-    for column in values:
-        column_empty_values = []
-        for value in column:
-            if value == "":
-                column_empty_values.append(value)
-        all_empty_values_list.append(column_empty_values)
-
-    for each_list in all_empty_values_list:
-        if len(each_list) > 0:
-            print(
-                "It seems like you have missed to enter some values "
-                "on recent dates. Please enter data consistently in the "
-                "future in order to not distort the following calculations.\n"
+    is_all_empty = []
+    for val in values[0]:
+        if val == "":
+            is_all_empty.append(val)
+    if len(is_all_empty) == 30:
+        print(
+            "You did not enter any values in the last 30 days. "
+            "You need to enter values for an earlier date first.\n"
             )
-            break
-        else:
-            print("Good job, you have entered data for the last 30 days!\n")
-            break
+        main()
+        return False
+
+    if "" in values[0]:
+        print(
+            "It seems like you have missed to enter some values "
+            "on recent dates. Please enter data consistently in the "
+            "future in order to not distort the following calculations.\n"
+        )
+    else:
+        print("Good job, you have entered data for the last 30 days!\n")
+    return True
 
 
 def get_30_day_averages(values):
@@ -165,10 +166,9 @@ def validate_kpi(kpi):
     try:
         kpi_input = int(kpi)
         if kpi_input < 0:
-            print("Your input must be a positive, whole number!\n")
-            return False
+            raise ValueError()
     except ValueError:
-        print("You need to enter whole numbers!\n")
+        print("Your input must be a positive, whole number!\n")
         return False
     return True
 
@@ -272,14 +272,19 @@ def main():
     """
     chosen_date = get_date()
     unchecked_30_day_kpis = last_30_day_data(chosen_date)
-    check_30_day_data(unchecked_30_day_kpis)
-    averages = get_30_day_averages(unchecked_30_day_kpis)
-    str_kpis = get_kpis(chosen_date)
-    int_kpis = [int(kpi) for kpi in str_kpis]
-    #update_worksheet(int_kpis, chosen_date)
-    trends = calculate_current_trends(int_kpis, averages)
-    evaluate_min_max(trends)
-    evaluate_all_kpis(trends)
-    print("Thank you for entering the KPI data. See you tomorrow :)")
+    valid = check_30_day_data(unchecked_30_day_kpis)
+    # Thanks to my colleague Daniel, who helped me to run the following code
+    # only if valid was true, effectively checking that the program has
+    # user data from the last 30 days to work with.
+    if valid:
+        averages = get_30_day_averages(unchecked_30_day_kpis)
+        str_kpis = get_kpis(chosen_date)
+        int_kpis = [int(kpi) for kpi in str_kpis]
+        update_worksheet(int_kpis, chosen_date)
+        trends = calculate_current_trends(int_kpis, averages)
+        evaluate_min_max(trends)
+        evaluate_all_kpis(trends)
+        print("Thank you for entering the KPI data. See you tomorrow :)")
+
 
 main()
