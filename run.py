@@ -48,7 +48,7 @@ def validate_date(date):
     This function checks if the given date exists
     in the sheet and can be filled with values.
     """
-    if WORKSHEET.find(date) is not None:
+    if WORKSHEET.find(date):
         return True
     else:
         print("That was not a valid date, please try again.\n")
@@ -155,9 +155,23 @@ def get_30_day_averages(values):
     """
     list_with_sums = []
     for each_list in values:
-        int_list = [int(num) for num in each_list]
+        int_list = [int(num) for num in each_list if num != ""]
         list_with_sums.append(sum(int_list))
     print(list_with_sums)
+
+    list_with_lens = []
+    for each_list in values:
+        no_empty_strings_list = []
+        for item in each_list:
+            if item != "":
+                no_empty_strings_list.append(item)
+        list_with_lens.append(len(no_empty_strings_list))
+    print(list_with_lens)
+
+    averages = (
+        [num1/num2 for num1, num2 in zip(list_with_sums, list_with_lens)]
+    )
+    print(averages)
 
 
 def update_worksheet(kpis, date):
