@@ -55,6 +55,77 @@ def validate_date(date):
         return False
 
 
+def last_30_day_data(date):
+    """
+    This function grabs the values from the last 30 days of each KPI
+    from the worksheet and calculates their averages.
+    """
+    # This function was set up with the help of the gspread documentation.
+    date_cell = WORKSHEET.find(date)
+    date_cell_row = date_cell.row
+    range_start = str(date_cell_row-30)
+    range_end = str(date_cell_row-1)
+
+    final_values = []
+    for let in ["B", "C", "D", "E", "F"]:
+        column_values = []
+        for row in WORKSHEET.range(f"{let}{range_start}:{let}{range_end}"):
+            column_values.append(row.value)
+        final_values.append(column_values)
+    return final_values
+
+
+def check_30_day_data(values):
+    """
+    This function will check how many of the 30 values are empty and
+    subsquently give a string to the user if they were sloppy
+    entering values during the last 30 days.
+    """
+    all_empty_values_list = []
+    for column in values:
+        column_empty_values = []
+        for value in column:
+            if value == "":
+                column_empty_values.append(value)
+        all_empty_values_list.append(column_empty_values)
+
+    for each_list in all_empty_values_list:
+        if len(each_list) > 0:
+            print(
+                "It seems like you have missed to enter some values "
+                "on recent dates. Please enter data consistently in the future "
+                "in order to not distort the following calculations.\n"
+            )
+            break
+        else:
+            print("Good job, you have entered data for the last 30 days!\n")
+            break
+
+
+def get_30_day_averages(values):
+    """
+    This function will calculate the averages for the last 30
+    days for each KPI.
+    """
+    list_with_sums = []
+    for each_list in values:
+        int_list = [int(num) for num in each_list if num != ""]
+        list_with_sums.append(sum(int_list))
+
+    list_with_lens = []
+    for each_list in values:
+        no_empty_strings_list = []
+        for item in each_list:
+            if item != "":
+                no_empty_strings_list.append(item)
+        list_with_lens.append(len(no_empty_strings_list))
+
+    averages = (
+        [num1/num2 for num1, num2 in zip(list_with_sums, list_with_lens)]
+    )
+    return averages
+
+
 def get_kpis(date):
     """
     This function gets all the KPIs from the user and saves them in a list.
@@ -96,82 +167,9 @@ def validate_kpi(kpi):
             print("Your input must be a positive, whole number!\n")
             return False
     except ValueError:
-        print("You can only enter numbers!\n")
+        print("You can only enter whole numbers!\n")
         return False
     return True
-
-
-def last_30_day_data(date):
-    """
-    This function grabs the values from the last 30 days of each KPI
-    from the worksheet and calculates their averages.
-    """
-    # This function was set up with the help of the gspread documentation.
-    date_cell = WORKSHEET.find(date)
-    date_cell_row = date_cell.row
-    range_start = str(date_cell_row-30)
-    range_end = str(date_cell_row-1)
-
-    final_values = []
-    for let in ["B", "C", "D", "E", "F"]:
-        column_values = []
-        for row in WORKSHEET.range(f"{let}{range_start}:{let}{range_end}"):
-            column_values.append(row.value)
-        final_values.append(column_values)
-    return final_values
-
-
-def check_30_day_data(values):
-    """
-    This function will check how many of the 30 values are empty and
-    subsquently give a string to the user if they were sloppy
-    entering values during the last 30 days.
-    """
-    all_empty_values_list = []
-    for column in values:
-        column_empty_values = []
-        for value in column:
-            if value == "":
-                column_empty_values.append(value)
-        all_empty_values_list.append(column_empty_values)
-
-    for each_list in all_empty_values_list:
-        if len(each_list) > 0:
-            print(
-                "It seems like you have missed to enter some values "
-                "on recent dates. Please do so in the future "
-                "in order to not distort the following calculations.\n"
-            )
-            break
-        else:
-            print("Good job, you have entered data for the last 30 days!\n")
-            break
-
-
-def get_30_day_averages(values):
-    """
-    This function will calculate the averages for the last 30
-    days for each KPI.
-    """
-    list_with_sums = []
-    for each_list in values:
-        int_list = [int(num) for num in each_list if num != ""]
-        list_with_sums.append(sum(int_list))
-    print(list_with_sums)
-
-    list_with_lens = []
-    for each_list in values:
-        no_empty_strings_list = []
-        for item in each_list:
-            if item != "":
-                no_empty_strings_list.append(item)
-        list_with_lens.append(len(no_empty_strings_list))
-    print(list_with_lens)
-
-    averages = (
-        [num1/num2 for num1, num2 in zip(list_with_sums, list_with_lens)]
-    )
-    print(averages)
 
 
 def update_worksheet(kpis, date):
@@ -188,6 +186,15 @@ def update_worksheet(kpis, date):
     print("Worksheet successfully updated.\n")
 
 
+def calculate_current_trends(kpis, averages):
+    """
+    This function will calculate how the KPIs have developed compared
+    to the average of the last 30 days.
+    """ 
+    trends_list = [(kpi/average)-1 for kpi, average in zip(kpis, averages)]
+    print(trends_list)
+
+
 def main():
     """
     This function will execute all the other functions to run the program.
@@ -195,10 +202,10 @@ def main():
     chosen_date = get_date()
     unchecked_30_day_kpis = last_30_day_data(chosen_date)
     check_30_day_data(unchecked_30_day_kpis)
-    get_30_day_averages(unchecked_30_day_kpis)
-    #str_kpis = get_kpis(chosen_date)
-    #int_kpis = [int(kpi) for kpi in str_kpis]
-    #update_worksheet(int_kpis, chosen_date)
-
+    averages = get_30_day_averages(unchecked_30_day_kpis)
+    str_kpis = get_kpis(chosen_date)
+    int_kpis = [int(kpi) for kpi in str_kpis]
+    update_worksheet(int_kpis, chosen_date)
+    calculate_current_trends(int_kpis, averages)
 
 main()
