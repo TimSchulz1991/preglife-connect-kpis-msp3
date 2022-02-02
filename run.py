@@ -192,8 +192,35 @@ def calculate_current_trends(kpis, averages):
     to the average of the last 30 days.
     """ 
     trends_list = [(kpi/average)-1 for kpi, average in zip(kpis, averages)]
-    print(trends_list)
+    return trends_list
 
+
+def evaluate_trends(trends):
+    """
+    This function will evaluate the previously calculated trends
+    of KPI development and will give the user relevant 
+    information about it.
+    """
+    all_kpis = ["App Opens", "Screen Views", "Ad Views", "Threads Created", "Swipes"]
+    min_kpi = min(trends)
+    max_kpi = max(trends)
+    min_pos = trends.index(min_kpi)
+    max_pos = trends.index(max_kpi)
+
+    if min_kpi < 0:
+        min_word = "decreasing"
+    else:
+        min_word = "increaing"
+    
+    if max_kpi > 0:
+        max_word = "increaing"
+    else: 
+        max_word = "decreaing"
+
+    print(
+        f"Compared to the average of the last 30 days, the KPI '{all_kpis[min_pos]}' performed worst, {min_word} by {round((min_kpi)*100)}%\n"
+        )
+    print(f"The KPI '{all_kpis[max_pos]}' performed best, {max_word} by {round((max_kpi)*100)}%\n")
 
 def main():
     """
@@ -205,7 +232,8 @@ def main():
     averages = get_30_day_averages(unchecked_30_day_kpis)
     str_kpis = get_kpis(chosen_date)
     int_kpis = [int(kpi) for kpi in str_kpis]
-    update_worksheet(int_kpis, chosen_date)
-    calculate_current_trends(int_kpis, averages)
+    #update_worksheet(int_kpis, chosen_date)
+    trends = calculate_current_trends(int_kpis, averages)
+    evaluate_trends(trends)
 
 main()
