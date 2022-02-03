@@ -22,9 +22,9 @@ def delay_print(s):
     """
     This function prints the text letter by letter.
     """
-    # This function's code was completely copied from 
-    # https://stackoverflow.com/questions/9246076/how-to-print-one-character-at-a-time-on-one-line
-    # time.sleep was also used more throughout the code
+# This function's code was completely copied from 
+# https://stackoverflow.com/questions/9246076/how-to-print-one-character-at-a-time-on-one-line
+# time.sleep was also used more throughout the code
     for c in s:
         sys.stdout.write(c)
         sys.stdout.flush()
@@ -78,13 +78,15 @@ def last_30_day_data(date):
     This function grabs the values from the last 30 days of each KPI
     from the worksheet.
     """
-    # This function was set up with the help of the gspread documentation.
+# This function was set up with the help of the gspread documentation
     date_cell = WORKSHEET.find(date)
     date_cell_row = date_cell.row
     range_start = str(date_cell_row-30)
     range_end = str(date_cell_row-1)
 
     final_values = []
+# I am grabbing the 30 rows over the date row that the user inputted
+# I am looping through colums first  and then through the rows in a second loop
     for let in ["B", "C", "D", "E", "F"]:
         column_values = []
         for row in WORKSHEET.range(f"{let}{range_start}:{let}{range_end}"):
@@ -110,6 +112,9 @@ def check_30_day_data(values):
             )
         main()
         return False
+# If this validation returns False, then I jump back to the beginning
+# of the main function, because I need a date for the calcualtions,
+# which had at least one previous entry in the last 30 days
 
     if "" in values[0]:
         delay_print(
@@ -120,7 +125,7 @@ def check_30_day_data(values):
     else:
         delay_print("Good job, you have entered data for the last 30 days!\n")
     return True
-
+# If True is returned here, the main() function keeps on executing
 
 def get_30_day_averages(values):
     """
@@ -144,7 +149,9 @@ def get_30_day_averages(values):
         [num1/num2 for num1, num2 in zip(list_with_sums, list_with_lens)]
     )
     return averages
-
+# I create two lists, one with the sums of each column, one with the length
+# (amount) of non-empty values in the column
+# Then I calculate the averages for each KPI with a list comprehension
 
 def get_kpis(date):
     """
@@ -163,8 +170,8 @@ def get_kpis(date):
                f"for the chosen date ({date}):\n"]
     i = 0
     time.sleep(1)
-    # Thanks to my colleague Daniel to give me the idea to
-    # use a while loop in this particular way
+# Thanks to my colleague Daniel to give me the idea to
+# use a while loop in this particular way
     while len(prompts) != len(kpi_list):
         kpi_input = input(prompts[i])
         if validate_kpi(kpi_input):
@@ -180,9 +187,9 @@ def validate_kpi(kpi):
     This function validates that the given values are integers
     larger than or equal to 0.
     """
-    # This stackoverflow page helped me with
-    # the validation process (for positive integer):
-    # https://stackoverflow.com/questions/26198131/check-if-input-is-positive-integer
+# This stackoverflow page helped me with
+# the validation process (for positive integer):
+# https://stackoverflow.com/questions/26198131/check-if-input-is-positive-integer
     try:
         kpi_input = int(kpi)
         if kpi_input < 0:
@@ -294,9 +301,9 @@ def main():
     chosen_date = get_date()
     unchecked_30_day_kpis = last_30_day_data(chosen_date)
     valid = check_30_day_data(unchecked_30_day_kpis)
-    # Thanks to my colleague Daniel, who helped me to figure out how torun the following 
-    # code only if 'valid' was true, effectively checking that the program has
-    # user data from at least 1 of the last 30 days to work with.
+# Thanks to my colleague Daniel, who helped me to figure out how to run the following 
+# code only if 'valid' was true, effectively checking that the program has
+# user data from at least 1 of the last 30 days to work with.
     if valid:
         averages = get_30_day_averages(unchecked_30_day_kpis)
         str_kpis = get_kpis(chosen_date)
