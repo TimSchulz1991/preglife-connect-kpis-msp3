@@ -1,6 +1,7 @@
 import gspread
 from google.oauth2.service_account import Credentials
-
+import time
+import sys
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -13,11 +14,26 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open("connect_kpis")
 WORKSHEET = SHEET.worksheet("kpis")
-
-print("""Welcome to this Python program, which captures the most recent
-Preglife Connect KPIs and analyzes the current trends for you!\n""")
 # The setup of the connection between Python and the Google sheet
 # was done with the help of the LoveSandwiches project.
+
+
+def delay_print(s):
+    """
+    This function prints the text letter by letter.
+    """
+    # This function's code was completely copied from 
+    # https://stackoverflow.com/questions/9246076/how-to-print-one-character-at-a-time-on-one-line
+    # time.sleep was also used more throughout the code
+    for c in s:
+        sys.stdout.write(c)
+        sys.stdout.flush()
+        time.sleep(0.035)
+    print()
+
+
+delay_print("""Welcome to this Python program, which captures the most recent
+Preglife Connect KPIs and analyzes the current trends for you!\n""")
 
 
 def get_date():
@@ -26,19 +42,21 @@ def get_date():
     for which the KPIs should be entered into the sheet.
     """
     while True:
+        time.sleep(1)
         print(
             "For which date would you like to enter "
             "the KPIs of the Preglife Connect app?\n"
         )
+        time.sleep(2)
         print(
             "Please enter the date in the following format: "
             "DD/MM/YYYY, e.g. 22/02/2022\n"
         )
-
+        time.sleep(2)
         date_input = input("Enter the date here:\n")
 
         if validate_date(date_input):
-            print("Thank you for entering a valid date.\n")
+            delay_print("Thank you for entering a valid date.\n")
             break
     return date_input
 
@@ -51,7 +69,7 @@ def validate_date(date):
     if WORKSHEET.find(date):
         return True
     else:
-        print("That was not a valid date, please try again.\n")
+        delay_print("That was not a valid date, please try again.\n")
         return False
 
 
@@ -86,7 +104,7 @@ def check_30_day_data(values):
         if val == "":
             is_all_empty.append(val)
     if len(is_all_empty) == 30:
-        print(
+        delay_print(
             "You did not enter any values in the last 30 days. "
             "You need to enter values for an earlier date first.\n"
             )
@@ -94,13 +112,13 @@ def check_30_day_data(values):
         return False
 
     if "" in values[0]:
-        print(
+        delay_print(
             "It seems like you have missed to enter some values "
             "on recent dates. Please enter data consistently in the "
             "future in order to not distort the following calculations.\n"
         )
     else:
-        print("Good job, you have entered data for the last 30 days!\n")
+        delay_print("Good job, you have entered data for the last 30 days!\n")
     return True
 
 
@@ -144,6 +162,7 @@ def get_kpis(date):
                "Please enter the number of SWIPES "
                f"for the chosen date ({date}):\n"]
     i = 0
+    time.sleep(1)
     # Thanks to my colleague Daniel to give me the idea to
     # use a while loop in this particular way
     while len(prompts) != len(kpi_list):
@@ -151,7 +170,8 @@ def get_kpis(date):
         if validate_kpi(kpi_input):
             kpi_list.append(kpi_input)
             i += 1
-    print("Thanks for entering valid data!\n")
+    delay_print("Thanks for entering valid data!\n")
+    time.sleep(1)
     return kpi_list
 
 
@@ -184,7 +204,7 @@ def update_worksheet(kpis, date):
     for col in range(1, 6):
         WORKSHEET.update_cell(date_cell.row, date_cell.col+col, kpis[i])
         i += 1
-    print("Worksheet successfully updated.\n")
+    delay_print("Worksheet successfully updated.\n")
 
 
 def calculate_current_trends(kpis, averages):
@@ -225,12 +245,13 @@ def evaluate_min_max(trends):
         max_word = "decreaing"
         trend_word_max = "'best'"
 
-    print(
+    delay_print(
         f"Compared to the average of the last 30 days, the KPI "
         f"'{all_kpis[min_pos]}' performed {trend_word_min}, "
         f"{min_word} by {round((min_kpi)*100)}%\n"
         )
-    print(
+    time.sleep(1)
+    delay_print(
         f"Compared to the average of the last 30 days, the KPI "
         f"'{all_kpis[max_pos]}' performed {trend_word_max}, "
         f"{max_word} by {round((max_kpi)*100)}%\n"
@@ -245,22 +266,22 @@ def evaluate_all_kpis(values):
     """
     positive_values = [val for val in values if val > 0]
     if len(positive_values) == 5:
-        print(
+        delay_print(
             "Great job, all 5 KPIs improved "
             "compared to last month's average.\n"
             )
     elif len(positive_values) >= 3:
-        print(
+        delay_print(
             "Very good, more than half of the 5 KPIs improved "
             "compared to last month's average.\n"
             )
     elif len(positive_values) >= 1:
-        print(
+        delay_print(
             "Not so bad, you increased at least some KPIs "
             "compared to last month's average.\n"
             )
     else:
-        print(
+        delay_print(
             "Keep on fighting, no KPIs improved "
             "compared to last month's average, but you can turn it around!\n"
             )
@@ -273,9 +294,9 @@ def main():
     chosen_date = get_date()
     unchecked_30_day_kpis = last_30_day_data(chosen_date)
     valid = check_30_day_data(unchecked_30_day_kpis)
-    # Thanks to my colleague Daniel, who helped me to run the following code
-    # only if valid was true, effectively checking that the program has
-    # user data from the last 30 days to work with.
+    # Thanks to my colleague Daniel, who helped me to figure out how torun the following 
+    # code only if 'valid' was true, effectively checking that the program has
+    # user data from at least 1 of the last 30 days to work with.
     if valid:
         averages = get_30_day_averages(unchecked_30_day_kpis)
         str_kpis = get_kpis(chosen_date)
@@ -284,7 +305,8 @@ def main():
         trends = calculate_current_trends(int_kpis, averages)
         evaluate_min_max(trends)
         evaluate_all_kpis(trends)
-        print("Thank you for entering the KPI data. See you tomorrow :)")
+        time.sleep(1)
+        delay_print("Thank you for entering the KPI data. See you tomorrow :)")
 
 
 main()
