@@ -1,7 +1,8 @@
-import gspread
-from google.oauth2.service_account import Credentials
 import time
 import sys
+import gspread
+from google.oauth2.service_account import Credentials
+
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -18,15 +19,15 @@ WORKSHEET = SHEET.worksheet("kpis")
 # was done with the help of the LoveSandwiches project.
 
 
-def delay_print(s):
+def delay_print(string):
     """
     This function prints the text letter by letter.
     """
-# This function's code was completely copied from 
+# This function's code was completely copied from
 # https://stackoverflow.com/questions/9246076/how-to-print-one-character-at-a-time-on-one-line
 # time.sleep was also used more throughout the code
-    for c in s:
-        sys.stdout.write(c)
+    for char in string:
+        sys.stdout.write(char)
         sys.stdout.flush()
         time.sleep(0.035)
     print()
@@ -127,6 +128,7 @@ def check_30_day_data(values):
     return True
 # If True is returned here, the main() function keeps on executing
 
+
 def get_30_day_averages(values):
     """
     This function will calculate the averages for the last 30
@@ -152,6 +154,7 @@ def get_30_day_averages(values):
 # I create two lists, one with the sums of each column, one with the length
 # (amount) of non-empty values in the column
 # Then I calculate the averages for each KPI with a list comprehension
+
 
 def get_kpis(date):
     """
@@ -301,9 +304,9 @@ def main():
     chosen_date = get_date()
     unchecked_30_day_kpis = last_30_day_data(chosen_date)
     valid = check_30_day_data(unchecked_30_day_kpis)
-# Thanks to my colleague Daniel, who helped me to figure out how to run the following 
-# code only if 'valid' was true, effectively checking that the program has
-# user data from at least 1 of the last 30 days to work with.
+# Thanks to my colleague Daniel, who helped me to figure out how to run the
+# following code only if 'valid' was true, effectively checking that the
+# program has user data from at least 1 of the last 30 days to work with.
     if valid:
         averages = get_30_day_averages(unchecked_30_day_kpis)
         str_kpis = get_kpis(chosen_date)
