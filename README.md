@@ -1,6 +1,6 @@
 # Preglife Connect KPI Capture
 
-While thinking about what to do for my 3rd milestone project, I decided against creating a random game or program, but instead wanted to build something that is useful to me in my daily work with my app startup Preglife Connect. I am responsible for keeping track of the app's development, so I decided that a KPI capture program, which also informs me about current trends, could be really useful. 
+While thinking about what to do for my 3rd milestone project, I decided against creating a random game or program, but instead wanted to build something that is useful to me in my daily work with my app startup Preglife Connect. I am responsible for keeping track of the app's user development, so I decided that a KPI (Key Performance Indicator) capture program, which also informs me about current trends, could be really useful to build. 
 
 [Here you can find the deployed project](https://preglife-connect-kpis-msp3.herokuapp.com/)
 
@@ -24,7 +24,7 @@ While thinking about what to do for my 3rd milestone project, I decided against 
 
 ![This image provides the introduction part of the program and ask the user to enter a date](documentation/screenshots/screenshot1.png)
 
-- In the part of the program the user is welcomed and then the program requests a date from the user, for which app KPIs should be entered. 
+- In this part of the program the user is welcomed and then the program requests a date from the user, for which app KPIs should be entered. 
 - The user is also told what kind of format the date should have. 
 - The user then enters a date and proceeds to the next part of the program.
 
@@ -63,6 +63,12 @@ While thinking about what to do for my 3rd milestone project, I decided against 
 
 ## Data Model
 
+My data is captured and modelled in a Google Sheets document. The document contains 6 columns, one for the dates and 5 for the respective KPIs. When the user chooses to enter data for a certain date, the columns B-F of the respective row of the given date are populated with the inputted KPI data. The date's data can be overwritten, simply by running the program again and using a date that was used before.
+
+![This image shows the Google Sheet and its column, in which the KPIs are filled into.](documentation/screenshots/google-sheet.png)
+
+I decided to structure my program using functional programming. I did not use OOP in this program.
+
 ## Testing
 
 I have manually tested this program by doing the following:
@@ -89,7 +95,14 @@ I have manually tested this program by doing the following:
 This project was deployed using CodeInstitute's mock terminal for Heroku.
 
 - Steps for deployment
-    - Fork or clone this
+    - Create a new Heroku account or login to an existing account and click on 'Create New App'
+    - Name the app and choose your region
+    - Go to Settings and click on 'Reveal cofig vars'
+        - Write CREDS in the KEY field and copy the content of the creds.json file into the VALUE field and click add
+        - Write PORT in the next KEY field and write 8000 into VALUE field and click add
+    - Go to the Buildpacks section below and click on Add Buildpack; add Python and NodeJS in that order
+    - Click on 'Deploy' in the Navbar and then click on 'Connect to Github'; enter the repository name and connect it
+    - Scroll down and do a manual deploy of the main branch; Heroku will inform you when the program was deployed and provide you with a button to the app
 
 ## Credits
 

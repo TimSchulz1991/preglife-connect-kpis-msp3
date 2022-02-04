@@ -55,7 +55,7 @@ def get_date():
         )
         time.sleep(2)
         date_input = input("Enter the date here:\n")
-
+# If a valid date is inputted, the code breaks out of this while loop
         if validate_date(date_input):
             delay_print("Thank you for entering a valid date.\n")
             break
