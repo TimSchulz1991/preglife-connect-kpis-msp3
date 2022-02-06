@@ -33,19 +33,25 @@ def delay_print(string):
     print()
 
 
-delay_print("""Welcome to this Python program, which captures the most recent
-Preglife Connect KPIs and analyzes the current trends for you!\n""")
-time.sleep(1)
-print(
-    "For which date would you like to enter "
-    "the KPIs of the Preglife Connect app?\n"
-)
-time.sleep(2)
-print(
-    "Please enter the date in the following format: "
-    "DD/MM/YYYY, e.g. 22/02/2022\n"
-)
-time.sleep(2)
+def welcome_user():
+    """
+    Welcome the user to the program and tell them about the first step.
+    """
+    delay_print(
+        "Welcome to this Python program, which captures the most recent "
+        "Preglife Connect KPIs and analyzes the current trends for you!\n"
+    )
+    time.sleep(1)
+    delay_print(
+        "For which date would you like to enter "
+        "the KPIs of the Preglife Connect app?\n"
+    )
+    time.sleep(2)
+    delay_print(
+        "Please enter the date in the following format: "
+        "DD/MM/YYYY, e.g. 22/02/2022\n"
+    )
+    time.sleep(2)
 
 
 def get_date():
@@ -322,4 +328,5 @@ def main():
         delay_print("Thank you for entering the KPI data. See you tomorrow :)")
 
 
+welcome_user()
 main()
