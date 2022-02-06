@@ -35,6 +35,17 @@ def delay_print(string):
 
 delay_print("""Welcome to this Python program, which captures the most recent
 Preglife Connect KPIs and analyzes the current trends for you!\n""")
+time.sleep(1)
+print(
+    "For which date would you like to enter "
+    "the KPIs of the Preglife Connect app?\n"
+)
+time.sleep(2)
+print(
+    "Please enter the date in the following format: "
+    "DD/MM/YYYY, e.g. 22/02/2022\n"
+)
+time.sleep(2)
 
 
 def get_date():
@@ -43,17 +54,6 @@ def get_date():
     for which the KPIs should be entered into the sheet.
     """
     while True:
-        time.sleep(1)
-        print(
-            "For which date would you like to enter "
-            "the KPIs of the Preglife Connect app?\n"
-        )
-        time.sleep(2)
-        print(
-            "Please enter the date in the following format: "
-            "DD/MM/YYYY, e.g. 22/02/2022\n"
-        )
-        time.sleep(2)
         date_input = input("Enter the date here:\n")
 # If a valid date is inputted, the code breaks out of this while loop
         if validate_date(date_input):
@@ -82,8 +82,10 @@ def last_30_day_data(date):
 # This function was set up with the help of the gspread documentation
     date_cell = WORKSHEET.find(date)
     date_cell_row = date_cell.row
-    range_start = str(date_cell_row-30)
-    range_end = str(date_cell_row-1)
+    from_row_above = 30
+    to_row_above = 1
+    range_start = date_cell_row - from_row_above
+    range_end = date_cell_row - to_row_above
 
     final_values = []
 # I am grabbing the 30 rows over the date row that the user inputted
@@ -134,16 +136,20 @@ def get_30_day_averages(values):
     This function will calculate the averages for the last 30
     days for each KPI.
     """
+# I create two lists, one with the sums of each column, one with the length
+# (amount) of non-empty values in the column
+# Then I calculate the averages for each KPI with a list comprehension
+
     list_with_sums = []
     for each_list in values:
-        int_list = [int(num) for num in each_list if num != ""]
+        int_list = [int(num) for num in each_list if num]
         list_with_sums.append(sum(int_list))
 
     list_with_lens = []
     for each_list in values:
         no_empty_strings_list = []
         for item in each_list:
-            if item != "":
+            if item:
                 no_empty_strings_list.append(item)
         list_with_lens.append(len(no_empty_strings_list))
 
@@ -151,9 +157,6 @@ def get_30_day_averages(values):
         [num1/num2 for num1, num2 in zip(list_with_sums, list_with_lens)]
     )
     return averages
-# I create two lists, one with the sums of each column, one with the length
-# (amount) of non-empty values in the column
-# Then I calculate the averages for each KPI with a list comprehension
 
 
 def get_kpis(date):
