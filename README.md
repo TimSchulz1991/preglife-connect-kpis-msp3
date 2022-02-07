@@ -83,7 +83,8 @@ I have manually tested this program by doing the following:
 
 - It took me a long time to figure out how to re-run my program in case the user had chosen a date that had no KPI entries in the past 30 days, which was leading to a ZeroDivisionError. With some input of my colleague Daniel I could figure it out eventually.
 - It also took me extremely long to figure out how to grab a range of values from the Google Sheet, which have a certain relative postition compared to the cell of the date input. I could eventually solve it with the Gspread documentation (which gave me a coder's high)!
-- no bugs are left unfixed
+- Lastly I realized I had a bug in my date validation, as it was scanning the whole Sheet to look if a date exists or not. This led to the potential error that I could have just inputted a number (e.g. 31), an if that number existed in the sheet in any other cell (e.g. Threads created column), then the validation would have been successfull, but eventually it would lead to an error.
+- No bugs are left unfixed
 
 ### Validator testing
 

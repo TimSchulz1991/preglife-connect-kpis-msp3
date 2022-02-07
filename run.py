@@ -46,12 +46,10 @@ def welcome_user():
         "For which date would you like to enter "
         "the KPIs of the Preglife Connect app?\n"
     )
-    time.sleep(2)
     delay_print(
         "Please enter the date in the following format: "
         "DD/MM/YYYY, e.g. 22/02/2022\n"
     )
-    time.sleep(2)
 
 
 def get_date():
@@ -73,7 +71,10 @@ def validate_date(date):
     This function checks if the given date exists
     in the sheet and can be filled with values.
     """
-    if WORKSHEET.find(date):
+    range_to_look = [row.value for row in WORKSHEET.range("A2:A1500")]
+# At first I just checked if the given date could be found in the whole sheet.
+# Now I limited the search to only the date column, to avoid errors.
+    if date in range_to_look:
         return True
     else:
         delay_print("That was not a valid date, please try again.\n")
@@ -88,13 +89,12 @@ def last_30_day_data(date):
 # This function was set up with the help of the gspread documentation
     date_cell = WORKSHEET.find(date)
     date_cell_row = date_cell.row
-    from_row_above = 30
-    to_row_above = 1
-    range_start = date_cell_row - from_row_above
-    range_end = date_cell_row - to_row_above
+    range_start = str(date_cell_row - 30)
+# At first I grab the value 30 rows above the date_cell as range start
+    range_end = str(date_cell_row - 1)
+# Then I grab the value in the row above the date_cell as range end
 
     final_values = []
-# I am grabbing the 30 rows over the date row that the user inputted
 # I am looping through colums first  and then through the rows in a second loop
     for let in ["B", "C", "D", "E", "F"]:
         column_values = []
